@@ -16,13 +16,15 @@ private:
 	sf::VideoMode videoMode;
 	sf::Event ev;
 	sf::ContextSettings settings;
-
+	sf::Texture texture;
+	sf::Sprite background;
 	//game logic 
 	bool endGame;
 	unsigned int points;
 	unsigned int lives;
 	unsigned int missileCounter;
 	unsigned int maxMissileCounter;
+	int backgroundCounter;
 	bool keys[4] = { false }; //fix
 
 
@@ -34,10 +36,12 @@ private:
 	void initVariables();
 	void initWindow();
 	void initFonts();
+	void initBackground();
 	void initText();
 	void initMissile();
 	void initPlayer();
 
+	void moveBackground();
 
 public:
 	//Constructors / Destructors

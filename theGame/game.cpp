@@ -1,6 +1,6 @@
 #include "game.h"
 #define SPEED 3.0f
-
+#define BACKGROUND_SPEED -1.f
 
 void game::initVariables() 
 {
@@ -12,7 +12,7 @@ void game::initVariables()
 	this->lives = 3;
 	this->missileCounter = 0;
 	this->maxMissileCounter = 5;
-	
+	this->backgroundCounter = 0;
 }
 
 void game::initWindow()
@@ -29,6 +29,11 @@ void game::initFonts()
 {
 }
 
+void game::initBackground()
+{
+	!this->texture.loadFromFile("images/background.jpg");
+	background.setTexture(texture);
+}
 
 void game::initText()
 {
@@ -42,14 +47,27 @@ void game::initMissile()
 void game::initPlayer() 
 {
 	this->player.setPosition(100.f, 450.f);
-	this->player.setSize(sf::Vector2f(100.f, 100.f));
+	this->player.setSize(sf::Vector2f(80.f, 80.f));
 	this->player.setFillColor(sf::Color::Cyan);
 }
+
+void game::moveBackground()
+{
+	background.move(BACKGROUND_SPEED, 0.f);
+	backgroundCounter++;
+	if (backgroundCounter == 3200)
+	{
+		backgroundCounter = 0;
+		this->initBackground();
+	}
+}
+
 
 game::game()
 {
 	initVariables();
 	initWindow();
+	initBackground();
 	initPlayer();
 
 }
@@ -97,6 +115,7 @@ void game::pollEvents()
 		case sf::Event::Closed:
 			this->window->close();
 			break;
+			//movement
 		case sf::Event::KeyPressed:
 			if (this->ev.key.code == sf::Keyboard::Escape)
 				this->window->close();
@@ -183,11 +202,13 @@ void game::update()
 {
 	pollEvents();
 	movePlayer();
+	//moveBackground();
 }
 
 void game::render()
-{
+{	
 	this->window->clear();
+	this->window->draw(background);
 	this->renderPlayer(*(this->window));
 	this->window->display();
 }
