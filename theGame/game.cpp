@@ -1,4 +1,6 @@
 #include "game.h"
+#define SPEED 3.0f
+
 
 void game::initVariables() 
 {
@@ -107,6 +109,15 @@ void game::pollEvents()
 			if (this->ev.key.code == sf::Keyboard::Right)
 				this->keys[3] = true;
 			break;
+		case sf::Event::KeyReleased:
+			if (this->ev.key.code == sf::Keyboard::Up)
+				this->keys[0] = false;
+			if (this->ev.key.code == sf::Keyboard::Down)
+				this->keys[1] = false;
+			if (this->ev.key.code == sf::Keyboard::Left)
+				this->keys[2] = false;
+			if (this->ev.key.code == sf::Keyboard::Right)
+				this->keys[3] = false;
 		}
 	}
 }
@@ -120,23 +131,23 @@ void game::updateMissilePosition()
 
 void game::moveUp()
 {
-	if(player.getPosition().y != 0)
-	player.move(0.f, -10.f);
+	if(player.getPosition().y > 0)
+	player.move(0.f, -SPEED);
 }
 void game::moveDown()
 {
-	if (player.getPosition().y != videoMode.height)
-		player.move(0.f, 10.f);
+	if (player.getPosition().y <  videoMode.height-player.getSize().y)
+		player.move(0.f, SPEED);
 }
 void game::moveLeft()
 {	
-	if (player.getPosition().x != 0)
-		player.move(-10.f, 0.f);
+	if (player.getPosition().x > 0)
+		player.move(-SPEED, 0.f);
 }
 void game::moveRight()
 {
-	if (player.getPosition().y != videoMode.width)
-		player.move(10.f, 0.f);
+	if (player.getPosition().x < videoMode.width-player.getSize().x)
+		player.move(SPEED, 0.f);
 }
 
 void game::movePlayer()
@@ -144,22 +155,18 @@ void game::movePlayer()
 	if (keys[0])
 	{
 		this->moveUp();
-		keys[0] = false;
 	}
 	if (keys[1])
 	{
 		this->moveDown();
-		keys[1] = false;
 	}
 	if (keys[2])
 	{
 		this->moveLeft();
-		keys[2] = false;
 	}
 	if (keys[3])
 	{
 		this->moveRight();
-		keys[3] = false;
 	}
 }
 
