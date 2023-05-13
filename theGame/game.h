@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <stdlib.h>     /* srand, rand */
+#include<sstream>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -18,6 +20,9 @@ private:
 	sf::ContextSettings settings;
 	sf::Texture texture;
 	sf::Sprite background;
+	sf::Text pointsText;
+	sf::Text livesText;
+	sf::Font font;
 	//game logic 
 	bool endGame;
 	unsigned int points;
@@ -42,6 +47,7 @@ private:
 	void initPlayer();
 
 	void moveBackground();
+	void spawnMissile();
 
 public:
 	//Constructors / Destructors
@@ -58,6 +64,7 @@ public:
 	void coinCollect();
 	void updateCoins();
 	void updateScore();
+	void updateText();
 	void pollEvents();
 	void updateMissilePosition();
 	void update();
@@ -70,6 +77,8 @@ public:
 
 	void renderText(sf::RenderTarget& target);
 	void renderPlayer(sf::RenderTarget& target);
+	void renderMissile(sf::RenderTarget& target);
+
 	void render();
 
 

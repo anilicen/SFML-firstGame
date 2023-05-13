@@ -12,7 +12,7 @@
 int main() {
 
 	game game;
-
+	srand(time(NULL));
 
 
 	//Game loop

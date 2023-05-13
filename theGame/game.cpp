@@ -1,6 +1,9 @@
 #include "game.h"
 #define SPEED 3.0f
 #define BACKGROUND_SPEED -1.f
+#define MISSILE_HEIGHT 20.f
+#define MISSILE_WIDTH 60.f
+#define MISSILE_SPEED 5.0f
 
 void game::initVariables() 
 {
@@ -11,13 +14,13 @@ void game::initVariables()
 	this->points = 0;
 	this->lives = 3;
 	this->missileCounter = 0;
-	this->maxMissileCounter = 5;
+	this->maxMissileCounter = 8;
 	this->backgroundCounter = 0;
 }
 
 void game::initWindow()
 {
-	settings.antialiasingLevel = 8.0;
+	settings.antialiasingLevel = 8;
 	this->videoMode.height = 900;
 	this->videoMode.width = 1600;
 	this->window = new sf::RenderWindow(this->videoMode, "Game 1", sf::Style::Close | sf::Style::Titlebar,settings);
@@ -27,21 +30,34 @@ void game::initWindow()
 
 void game::initFonts()
 {
+	font.loadFromFile("fonts/Dosis-Light.ttf");
 }
 
 void game::initBackground()
 {
-	!this->texture.loadFromFile("images/background.jpg");
+	this->texture.loadFromFile("images/background.jpg");
 	background.setTexture(texture);
 }
 
 void game::initText()
-{
+{	
+	this->pointsText.setFont(this->font);
+	this->pointsText.setString(" ");
+	this->pointsText.setCharacterSize(24);
+	this->pointsText.setPosition(50.0f, 50.0f);
+
+	this->livesText.setFont(this->font);
+	this->livesText.setString(" ");
+	this->livesText.setCharacterSize(24);
+	this->livesText.setPosition(50.0f, 30.0f);
+
 }
 
 void game::initMissile()
 {
-
+	this->missile.setPosition(0.f, 0.f);
+	this->missile.setSize(sf::Vector2f(MISSILE_WIDTH, MISSILE_HEIGHT));
+	this->missile.setFillColor(sf::Color::Red);
 }
 
 void game::initPlayer() 
@@ -62,6 +78,19 @@ void game::moveBackground()
 	}
 }
 
+void game::spawnMissile()
+{
+	if(missileCounter < maxMissileCounter)
+	{
+		int y = rand() % int(videoMode.height - 2 * MISSILE_HEIGHT);
+		this->missile.setPosition(videoMode.width, y);
+		this->missiles.push_back(missile);
+		missileCounter++;
+	}
+}
+
+
+
 
 game::game()
 {
@@ -69,6 +98,9 @@ game::game()
 	initWindow();
 	initBackground();
 	initPlayer();
+	initMissile();
+	initText();
+	initFonts();
 
 }
 
@@ -89,6 +121,19 @@ const bool game::getEndGame() const
 
 void game::isPlayerHit()
 {
+	for (int i = 0; i < missiles.size(); i++) {
+		if (this->player.getGlobalBounds().intersects(missiles[i].getGlobalBounds())) {
+			this->lives--;
+			this->missiles.erase(this->missiles.begin() + i);
+			missileCounter--;
+			if (player.getFillColor() == sf::Color::Cyan) {
+				player.setFillColor(sf::Color::White);
+			}
+			else {
+				player.setFillColor(sf::Color::Cyan);
+			}
+		}
+	}
 }
 
 
@@ -103,6 +148,19 @@ void game::updateCoins()
 
 void game::updateScore()
 {
+	this->points++;
+}
+
+void game::updateText()
+{
+	std::stringstream scoreTextStream;
+	std::stringstream livesTextStream;
+	scoreTextStream << "Points:" << this->points;
+	livesTextStream << "Lives: " << this->lives;
+	
+	pointsText.setString(scoreTextStream.str());
+	livesText.setString(livesTextStream.str());
+
 }
 
 void game::pollEvents()
@@ -144,6 +202,13 @@ void game::pollEvents()
 
 void game::updateMissilePosition()
 {
+	for (int i = 0; i < missiles.size(); i++) {
+		missiles[i].move(-MISSILE_SPEED, 0.f);
+		if (missiles[i].getPosition().x < -MISSILE_WIDTH) {
+			this->missiles.erase(this->missiles.begin() + i);
+			missileCounter--;
+		}
+	}
 }
 
 
@@ -191,18 +256,33 @@ void game::movePlayer()
 
 void game::renderText(sf::RenderTarget& target)
 {
+	target.draw(this->livesText);
+	target.draw(this->pointsText);
 }
 
 void game::renderPlayer(sf::RenderTarget& target)
 {
 	target.draw(this->player);
 }
+void game::renderMissile(sf::RenderTarget& target)
+{
+	for (auto& mis : missiles) {
+		target.draw(mis);
+	}
+}
+
 
 void game::update()
 {
+
 	pollEvents();
 	movePlayer();
-	//moveBackground();
+	spawnMissile();
+	updateMissilePosition();
+	isPlayerHit();
+	updateScore();
+	updateText();
+		//moveBackground();
 }
 
 void game::render()
@@ -210,6 +290,8 @@ void game::render()
 	this->window->clear();
 	this->window->draw(background);
 	this->renderPlayer(*(this->window));
+	this->renderMissile(*(this->window));
+	this->renderText(*(this->window));
 	this->window->display();
 }
 
