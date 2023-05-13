@@ -1,6 +1,6 @@
 #include "game.h"
 
-void game::initVariables()
+void game::initVariables() 
 {
 	this->window = nullptr;
 
@@ -10,14 +10,15 @@ void game::initVariables()
 	this->lives = 3;
 	this->missileCounter = 0;
 	this->maxMissileCounter = 5;
-
+	
 }
 
 void game::initWindow()
 {
+	settings.antialiasingLevel = 8.0;
 	this->videoMode.height = 900;
 	this->videoMode.width = 1600;
-	this->window = new sf::RenderWindow(this->videoMode, "Game 1", sf::Style::Close | sf::Style::Titlebar);
+	this->window = new sf::RenderWindow(this->videoMode, "Game 1", sf::Style::Close | sf::Style::Titlebar,settings);
 	
 	this->window->setFramerateLimit(144);
 }
@@ -98,13 +99,13 @@ void game::pollEvents()
 			if (this->ev.key.code == sf::Keyboard::Escape)
 				this->window->close();
 			if (this->ev.key.code == sf::Keyboard::Up)
-				moveUp();
+				this->keys[0] = true;
 			if (this->ev.key.code == sf::Keyboard::Down)
-				moveDown();
+				this->keys[1] = true;
 			if (this->ev.key.code == sf::Keyboard::Left)
-				moveLeft();
+				this->keys[2] = true;
 			if (this->ev.key.code == sf::Keyboard::Right)
-				moveRight();
+				this->keys[3] = true;
 			break;
 		}
 	}
@@ -115,10 +116,7 @@ void game::updateMissilePosition()
 {
 }
 
-void game::update()
-{
-	pollEvents();
-}
+
 
 void game::moveUp()
 {
@@ -141,6 +139,30 @@ void game::moveRight()
 		player.move(10.f, 0.f);
 }
 
+void game::movePlayer()
+{
+	if (keys[0])
+	{
+		this->moveUp();
+		keys[0] = false;
+	}
+	if (keys[1])
+	{
+		this->moveDown();
+		keys[1] = false;
+	}
+	if (keys[2])
+	{
+		this->moveLeft();
+		keys[2] = false;
+	}
+	if (keys[3])
+	{
+		this->moveRight();
+		keys[3] = false;
+	}
+}
+
 void game::renderText(sf::RenderTarget& target)
 {
 }
@@ -148,6 +170,12 @@ void game::renderText(sf::RenderTarget& target)
 void game::renderPlayer(sf::RenderTarget& target)
 {
 	target.draw(this->player);
+}
+
+void game::update()
+{
+	pollEvents();
+	movePlayer();
 }
 
 void game::render()

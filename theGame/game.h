@@ -15,6 +15,7 @@ private:
 	sf::RenderWindow* window;
 	sf::VideoMode videoMode;
 	sf::Event ev;
+	sf::ContextSettings settings;
 
 	//game logic 
 	bool endGame;
@@ -22,6 +23,7 @@ private:
 	unsigned int lives;
 	unsigned int missileCounter;
 	unsigned int maxMissileCounter;
+	bool keys[4] = { false }; //fix
 
 
 	std::vector<sf::RectangleShape> missiles;
@@ -55,10 +57,12 @@ public:
 	void pollEvents();
 	void updateMissilePosition();
 	void update();
+
 	void moveUp();
 	void moveDown();
 	void moveLeft();
 	void moveRight();
+	void movePlayer();
 
 	void renderText(sf::RenderTarget& target);
 	void renderPlayer(sf::RenderTarget& target);
