@@ -4,6 +4,7 @@
 #define MISSILE_HEIGHT 20.f
 #define MISSILE_WIDTH 60.f
 #define MISSILE_SPEED 5.0f
+#define FRAME_RATE 144
 
 void game::initVariables() 
 {
@@ -14,8 +15,10 @@ void game::initVariables()
 	this->points = 0;
 	this->lives = 3;
 	this->missileCounter = 0;
-	this->maxMissileCounter = 8;
+	this->maxMissileCounter = 12;
 	this->backgroundCounter = 0;
+	this->randomMissileSpawn = 0;
+	this->randomMissileSpawnMax = (rand() % FRAME_RATE) + 10;
 }
 
 void game::initWindow()
@@ -24,8 +27,7 @@ void game::initWindow()
 	this->videoMode.height = 900;
 	this->videoMode.width = 1600;
 	this->window = new sf::RenderWindow(this->videoMode, "Game 1", sf::Style::Close | sf::Style::Titlebar,settings);
-	
-	this->window->setFramerateLimit(144);
+	this->window->setFramerateLimit(FRAME_RATE);
 }
 
 void game::initFonts()
@@ -35,7 +37,7 @@ void game::initFonts()
 
 void game::initBackground()
 {
-	this->texture.loadFromFile("images/background.jpg");
+	this->texture.loadFromFile("images/background_black.jpg");
 	background.setTexture(texture);
 }
 
@@ -53,6 +55,13 @@ void game::initText()
 
 }
 
+void game::initEndGameText() {
+	this->endGameText.setFont(this->font);
+	this->endGameText.setString(" ");
+	this->endGameText.setCharacterSize(96);
+	this->endGameText.setPosition(videoMode.width / 2,videoMode.height/2);
+
+}
 void game::initMissile()
 {
 	this->missile.setPosition(0.f, 0.f);
@@ -80,13 +89,16 @@ void game::moveBackground()
 
 void game::spawnMissile()
 {
-	if(missileCounter < maxMissileCounter)
+	if(missileCounter < maxMissileCounter && randomMissileSpawn >= randomMissileSpawnMax)
 	{
+		this->randomMissileSpawn = 0;
 		int y = rand() % int(videoMode.height - 2 * MISSILE_HEIGHT);
 		this->missile.setPosition(videoMode.width, y);
 		this->missiles.push_back(missile);
 		missileCounter++;
 	}
+	randomMissileSpawn++;
+
 }
 
 
@@ -101,7 +113,7 @@ game::game()
 	initMissile();
 	initText();
 	initFonts();
-
+	initEndGameText();
 }
 
 game::~game()
@@ -116,7 +128,7 @@ const bool game::running() const
 
 const bool game::getEndGame() const
 {
-	return false;
+	return this->endGame;
 }
 
 void game::isPlayerHit()
@@ -126,12 +138,6 @@ void game::isPlayerHit()
 			this->lives--;
 			this->missiles.erase(this->missiles.begin() + i);
 			missileCounter--;
-			if (player.getFillColor() == sf::Color::Cyan) {
-				player.setFillColor(sf::Color::White);
-			}
-			else {
-				player.setFillColor(sf::Color::Cyan);
-			}
 		}
 	}
 }
@@ -155,12 +161,17 @@ void game::updateText()
 {
 	std::stringstream scoreTextStream;
 	std::stringstream livesTextStream;
+	std::stringstream endGameTextStream;
+
 	scoreTextStream << "Points:" << this->points;
 	livesTextStream << "Lives: " << this->lives;
-	
+	endGameTextStream << "Points:" << this->points << "\n"<< "Lives: " << this->lives;
+
+
 	pointsText.setString(scoreTextStream.str());
 	livesText.setString(livesTextStream.str());
-
+	endGameText.setString(endGameTextStream.str());
+	
 }
 
 void game::pollEvents()
@@ -260,6 +271,8 @@ void game::renderText(sf::RenderTarget& target)
 	target.draw(this->pointsText);
 }
 
+
+
 void game::renderPlayer(sf::RenderTarget& target)
 {
 	target.draw(this->player);
@@ -269,6 +282,17 @@ void game::renderMissile(sf::RenderTarget& target)
 	for (auto& mis : missiles) {
 		target.draw(mis);
 	}
+}
+
+void game::renderEndGameText(sf::RenderTarget& target)
+{
+	target.draw(this->endGameText);
+}
+
+void game::endTheGame()
+{
+	if (this->lives <= 0)
+		this->endGame = true;
 }
 
 
@@ -282,6 +306,7 @@ void game::update()
 	isPlayerHit();
 	updateScore();
 	updateText();
+	endTheGame();
 		//moveBackground();
 }
 
@@ -292,6 +317,14 @@ void game::render()
 	this->renderPlayer(*(this->window));
 	this->renderMissile(*(this->window));
 	this->renderText(*(this->window));
+	this->window->display();
+}
+
+void game::renderEnd()
+{
+	this->window->clear();
+	this->window->draw(background);
+	this->renderEndGameText(*(this->window));
 	this->window->display();
 }
 

@@ -22,6 +22,9 @@ private:
 	sf::Sprite background;
 	sf::Text pointsText;
 	sf::Text livesText;
+
+	sf::Text endGameText;
+
 	sf::Font font;
 	//game logic 
 	bool endGame;
@@ -29,6 +32,9 @@ private:
 	unsigned int lives;
 	unsigned int missileCounter;
 	unsigned int maxMissileCounter;
+	unsigned int randomMissileSpawn;
+	unsigned int randomMissileSpawnMax;
+
 	int backgroundCounter;
 	bool keys[4] = { false }; //fix
 
@@ -45,6 +51,8 @@ private:
 	void initText();
 	void initMissile();
 	void initPlayer();
+
+	void initEndGameText();
 
 	void moveBackground();
 	void spawnMissile();
@@ -78,9 +86,11 @@ public:
 	void renderText(sf::RenderTarget& target);
 	void renderPlayer(sf::RenderTarget& target);
 	void renderMissile(sf::RenderTarget& target);
-
+	void renderEndGameText(sf::RenderTarget& target);
+	void endTheGame();
 	void render();
 
+	void renderEnd();
 
 };
 

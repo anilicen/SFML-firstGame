@@ -26,6 +26,12 @@ int main() {
 		
 		
 	}
+	std::cout << "BITTI\n";
+	
+	while (true) {
+		game.update();
+		game.renderEnd();
+	}
 		
 		return 0;
 }
