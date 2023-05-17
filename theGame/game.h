@@ -36,11 +36,11 @@ private:
 	unsigned int randomMissileSpawnMax;
 
 	int backgroundCounter;
-	bool keys[4] = { false }; //fix
+	bool keys[4];//fix
 
 
-	std::vector<sf::RectangleShape> missiles;
-	sf::RectangleShape missile;
+	std::vector<sf::ConvexShape> missiles;
+	sf::ConvexShape missile;
 
 	sf::RectangleShape player;
 

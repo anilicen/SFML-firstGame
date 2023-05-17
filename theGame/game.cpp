@@ -19,6 +19,8 @@ void game::initVariables()
 	this->backgroundCounter = 0;
 	this->randomMissileSpawn = 0;
 	this->randomMissileSpawnMax = (rand() % FRAME_RATE) + 10;
+	for (auto &x : keys) x = false;
+	
 }
 
 void game::initWindow()
@@ -65,8 +67,15 @@ void game::initEndGameText() {
 void game::initMissile()
 {
 	this->missile.setPosition(0.f, 0.f);
-	this->missile.setSize(sf::Vector2f(MISSILE_WIDTH, MISSILE_HEIGHT));
-	this->missile.setFillColor(sf::Color::Red);
+	this->missile.setPointCount(5);
+	this->missile.setPoint(0, sf::Vector2f(0,10));
+	this->missile.setPoint(1, sf::Vector2f(10, 0));
+	this->missile.setPoint(2, sf::Vector2f(70, 0));
+	this->missile.setPoint(3, sf::Vector2f(70, 20));
+	this->missile.setPoint(4, sf::Vector2f(10, 20));
+	
+	sf::Color color(0, 0, 0);
+	this->missile.setFillColor(color);
 }
 
 void game::initPlayer() 
@@ -93,6 +102,11 @@ void game::spawnMissile()
 	{
 		this->randomMissileSpawn = 0;
 		int y = rand() % int(videoMode.height - 2 * MISSILE_HEIGHT);
+		int red = int(rand() % 255);
+		int green = int(rand() % 255);
+		int blue = int(rand() % 255);
+		sf::Color color(red, green, blue);
+		this->missile.setFillColor(color);
 		this->missile.setPosition(videoMode.width, y);
 		this->missiles.push_back(missile);
 		missileCounter++;

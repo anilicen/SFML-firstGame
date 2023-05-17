@@ -29,7 +29,7 @@ int main() {
 	std::cout << "BITTI\n";
 	
 	while (true) {
-		game.update();
+		game.pollEvents();
 		game.renderEnd();
 	}
 		
